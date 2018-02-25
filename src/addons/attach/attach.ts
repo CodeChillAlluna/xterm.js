@@ -50,7 +50,12 @@ export function attach(term: Terminal, socket: WebSocket, bidirectional: boolean
 
           str = myTextDecoder.decode( ev.data );
       } else {
-        throw 'TODO: handle Blob?';
+        let fileReader = new FileReader();
+        myTextDecoder = new TextDecoder();
+        fileReader.onload = function() {
+          str = myTextDecoder.decode(ev.data);
+        };
+        fileReader.readAsArrayBuffer(ev.data);
       }
     }
 
