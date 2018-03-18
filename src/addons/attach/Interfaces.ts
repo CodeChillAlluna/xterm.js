@@ -7,7 +7,7 @@
 
 import { Terminal } from 'xterm';
 
-export interface IAttachAddonTerminal extends Terminal {
+export interface IattachAddonTerminal extends Terminal {
   __socket?: WebSocket;
   __attachSocketBuffer?: string;
 

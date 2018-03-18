@@ -8,7 +8,7 @@
 /// <reference path="../../../typings/xterm.d.ts"/>
 
 import { Terminal } from 'xterm';
-import { IAttachAddonTerminal } from './Interfaces';
+import { IattachAddonTerminal } from './Interfaces';
 
 /**
  * Attaches the given terminal to the given socket.
@@ -20,9 +20,12 @@ import { IAttachAddonTerminal } from './Interfaces';
  * frequency of 1 rendering per 10ms.
  */
 export function attach(term: Terminal, socket: WebSocket, bidirectional: boolean, buffered: boolean): void {
-  const addonTerminal = <IAttachAddonTerminal>term;
+  const addonTerminal = <IattachAddonTerminal>term;
   bidirectional = (typeof bidirectional === 'undefined') ? true : bidirectional;
   addonTerminal.__socket = socket;
+  if (socket.readyState === 1) {
+    socket.send("\r");
+  }
 
   addonTerminal.__flushBuffer = () => {
     addonTerminal.write(addonTerminal.__attachSocketBuffer);
@@ -50,19 +53,17 @@ export function attach(term: Terminal, socket: WebSocket, bidirectional: boolean
 
           str = myTextDecoder.decode( ev.data );
       } else {
-        let fileReader = new FileReader();
-        myTextDecoder = new TextDecoder();
+        var fileReader = new FileReader();
         fileReader.onload = function() {
-          str = myTextDecoder.decode(ev.data);
+            str = myTextDecoder.decode(this.result);
+            if (buffered) {
+              addonTerminal.__pushToBuffer(str || ev.data);
+            } else {
+              addonTerminal.write(str || ev.data);
+            }
         };
         fileReader.readAsArrayBuffer(ev.data);
       }
-    }
-
-    if (buffered) {
-      addonTerminal.__pushToBuffer(str || ev.data);
-    } else {
-      addonTerminal.write(str || ev.data);
     }
   };
 
@@ -90,7 +91,7 @@ export function attach(term: Terminal, socket: WebSocket, bidirectional: boolean
  * @param socket The socket from which to detach the current terminal.
  */
 export function detach(term: Terminal, socket: WebSocket): void {
-  const addonTerminal = <IAttachAddonTerminal>term;
+  const addonTerminal = <IattachAddonTerminal>term;
   addonTerminal.off('data', addonTerminal.__sendData);
 
   socket = (typeof socket === 'undefined') ? addonTerminal.__socket : socket;
