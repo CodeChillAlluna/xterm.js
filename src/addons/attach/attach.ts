@@ -80,7 +80,7 @@ export function attach(term: Terminal, socket: WebSocket, bidirectional: boolean
   }
 
   socket.addEventListener('close', () => detach(addonTerminal, socket));
-  socket.addEventListener('error', () => detach(addonTerminal, socket));
+  socket.addEventListener("error", () => detach(addonTerminal, socket));
 }
 
 /**
@@ -102,7 +102,6 @@ export function detach(term: Terminal, socket: WebSocket): void {
   delete addonTerminal.__socket;
 }
 
-
 export function apply(terminalConstructor: typeof Terminal): void {
   /**
    * Attaches the current terminal to the given socket
@@ -112,7 +111,7 @@ export function apply(terminalConstructor: typeof Terminal): void {
    * @param buffered Whether the rendering of incoming data should happen instantly or at a maximum
    * frequency of 1 rendering per 10ms.
    */
-  (<any>terminalConstructor.prototype).attach = function (socket: WebSocket, bidirectional: boolean, buffered: boolean): void {
+  (<any> terminalConstructor.prototype).attach = function (socket: WebSocket, bidirectional: boolean, buffered: boolean): void {
     attach(this, socket, bidirectional, buffered);
   };
 
@@ -121,7 +120,7 @@ export function apply(terminalConstructor: typeof Terminal): void {
    *
    * @param socket The socket from which to detach the current terminal.
    */
-  (<any>terminalConstructor.prototype).detach = function (socket: WebSocket): void {
+  (<any> terminalConstructor.prototype).detach = function (socket: WebSocket): void {
     detach(this, socket);
   };
 }
