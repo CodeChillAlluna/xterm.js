@@ -9,6 +9,7 @@
 
 import { Terminal } from 'xterm';
 import { IattachAddonTerminal } from './Interfaces';
+import * as TextEncoding from "text-encoding";
 
 /**
  * Attaches the given terminal to the given socket.
@@ -53,9 +54,10 @@ export function attach(term: Terminal, socket: WebSocket, bidirectional: boolean
 
           str = myTextDecoder.decode( ev.data );
       } else {
+        let decoder = new TextEncoding.TextDecoder("utf-8");
         var fileReader = new FileReader();
         fileReader.onload = function() {
-            str = myTextDecoder.decode(this.result);
+            str = decoder.decode(this.result);
             if (buffered) {
               addonTerminal.__pushToBuffer(str || ev.data);
             } else {
